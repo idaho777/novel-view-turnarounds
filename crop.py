@@ -3,8 +3,8 @@ import os
 
 import cv2 as cv2
 
-image_directory = ""
-crop_directory = "crops"
+image_directory = "0-original"
+crop_directory = "1-crops"
 images = []
 key = None
 top_left = None
@@ -21,10 +21,12 @@ def split():
        press 'Enter'
 
     '''
-    global image_directory, images
+    global image_directory, crop_directory
+    main_directory = get_directory()
+    image_directory = os.path.join(main_directory, image_directory)
+    crop_directory = os.path.join(main_directory, crop_directory)
 
-    image_directory = get_directory()
-    images = queue_images(image_directory)
+    images = queue_images(os.path.join(main_directory, image_directory))
     crop_images(images)
 
 
@@ -32,7 +34,7 @@ def get_directory():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--directory", help="Directory of images to crop")
     args = parser.parse_args()
-    assert args.directory, "We need a directory with images!"
+    assert args.directory, "Specify root directory of images.  This directory should have subdirectories."
     print("Directory {0}".format(args.directory))
     return args.directory
 
@@ -47,13 +49,13 @@ def queue_images(image_directory):
     return images
 
 
-def crop_images(images):
-    global image_directory
+def crop_images(orig_images):
+    global image_directory, crop_directory
 
     cv2.namedWindow("Crop")
     cv2.setMouseCallback("Crop", crop_mouse_click)
-    for f in images:
-        if not os.path.isfile(os.path.join(image_directory, crop_directory, f)):
+    for f in orig_images:
+        if not os.path.isfile(os.path.join(crop_directory, f)): # If cropped image doesn't exist
             crop_image(f)
 
 
@@ -77,7 +79,8 @@ def crop_image(f):
     crop = img[:,:,:]
     if top_left is not None and bot_right is not None:
         crop = img[top_left[1]:bot_right[1], top_left[0]:bot_right[0],:]
-    new_img_path = os.path.join(image_directory, crop_directory, f)
+
+    new_img_path = os.path.join(crop_directory, f)
     print("Saving cropped image {0}".format(new_img_path))
     cv2.imwrite(new_img_path, crop)
 
@@ -94,4 +97,3 @@ def crop_mouse_click(event, x, y, flags, param):
 
 if __name__ == '__main__':
     split()
-
