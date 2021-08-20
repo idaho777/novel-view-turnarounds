@@ -17,7 +17,7 @@ class LabelUI(tk.Frame):
     def __init__(self, main:tk.Tk=None):
         super().__init__(main)
         self.main = main
-        self.main.geometry('500x600')
+        self.main.geometry('600x700')
         self.create_widgets()
 
 
@@ -29,13 +29,14 @@ class LabelUI(tk.Frame):
         self.curr_queue_index = 0
         self.load_labels()
         self.load_image()
+        self.curr_label = -1
 
 
     def load_image_queue(self):
         self.image_queue = []
         for f in os.listdir(self.dir_path):
             image_path = os.path.join(self.dir_path, f)
-            if os.path.isfile(image_path) and os.path.splitext(image_path)[1] == '.jpg':
+            if os.path.isfile(image_path) and os.path.splitext(image_path)[1] in ['.jpg', '.jpeg', '.png']:
                 self.image_queue.append(f)
 
 
@@ -50,7 +51,7 @@ class LabelUI(tk.Frame):
 
     # Creating UI =======================================================================
     def create_widgets(self):
-        self.skip_labeled = tk.IntVar(value=1)
+        self.skip_labeled = tk.IntVar(value=0)
         self.create_label_section()
         self.create_nav_section()
 
@@ -115,7 +116,7 @@ class LabelUI(tk.Frame):
         curr_image_path = os.path.join(self.dir_path, self.curr_image_name)
         print(self.curr_image_name)
         image = Image.open(curr_image_path)
-        image.thumbnail(size=(200, 200))
+        image.thumbnail(size=(300, 300))
         self.photo = ImageTk.PhotoImage(image=image)
 
         image_pane = tk.Label(master=self.main, image=self.photo)
@@ -134,13 +135,15 @@ class LabelUI(tk.Frame):
         buttonprev = tk.Button(master=self.main, text='prev\n(left-arrow)', command= lambda:self.prevCallBack())
         buttonsave = tk.Button(master=self.main, text='save', command= lambda:self.saveCallBack())
         buttonnext = tk.Button(master=self.main, text='next\n(right-arrow/Return)', command= lambda:self.nextCallBack())
+        buttondelete = tk.Button(master=self.main, text='delete', command= lambda:self.deleteImageCallBack())
         checkbuttonskip = tk.Checkbutton(master=self.main, text='Skip Labeled Images', variable=self.skip_labeled)
 
-        instruct.grid(row=3, columnspan=2)
+        instruct.grid(row=3, column=1, columnspan=2)
         checkbuttonskip.grid(row=3, column=0, pady=2)
         buttonprev.grid(row=4, column=0, sticky='NSEW', pady=2)
         buttonsave.grid(row=4, column=1, sticky='NSEW', pady=2)
         buttonnext.grid(row=4, column=2, sticky='NSEW', pady=2)
+        buttondelete.grid(row=5, column=0, sticky='NSEW', pady=2)
 
         self.main.bind('<Left>', lambda event: self.prevCallBack())
         self.main.bind('<Right>', lambda event: self.nextCallBack())
@@ -166,3 +169,21 @@ class LabelUI(tk.Frame):
     
     def saveCallBack(self):
         self.save_label()
+
+
+    def deleteImageCallBack(self):
+        img_name = self.image_queue[self.curr_queue_index]
+        curr_image_path = os.path.join(self.dir_path, img_name)
+        try:
+            os.remove(curr_image_path)
+            if img_name in self.label_json:
+                self.label_json.pop(img_name)
+            self.image_queue.pop(self.curr_queue_index)
+
+            self.save_label()
+            self.load_image()
+        except OSError:
+            pass
+        except IndexError:
+            image_pane = tk.Label(master=self.main, text="No more images.")
+            image_pane.grid(row=1, column=1, sticky='NSEW', pady=2)
