@@ -46,7 +46,7 @@ class LabelUI(tk.Frame):
                 self.label_json = json.load(f)
         else:
             self.label_json = dict()
-        print('Printing {}'.format(self.label_json_path))
+        print('Output {}'.format(self.label_json_path))
 
 
     # Creating UI =======================================================================
@@ -58,13 +58,13 @@ class LabelUI(tk.Frame):
 
     def create_label_section(self):
         button0 = tk.Button(master=self.main, text = 'front\n(,)', command= lambda: self.labelCallBack(0))
-        button1 = tk.Button(master=self.main, text = 'front-right\n(.)', command= lambda: self.labelCallBack(315))
-        button2 = tk.Button(master=self.main, text = 'right\n(l)', command= lambda: self.labelCallBack(270))
-        button3 = tk.Button(master=self.main, text = 'back-right\n(o)', command= lambda: self.labelCallBack(225))
-        button4 = tk.Button(master=self.main, text = 'back\n(i)', command= lambda: self.labelCallBack(180))
-        button5 = tk.Button(master=self.main, text = 'back-left\n(u)', command= lambda: self.labelCallBack(135))
-        button6 = tk.Button(master=self.main, text = 'left\n(j)', command= lambda: self.labelCallBack(90))
-        button7 = tk.Button(master=self.main, text = 'front-left\n(m)', command= lambda: self.labelCallBack(45))
+        button1 = tk.Button(master=self.main, text = 'front-right\n(.)', command= lambda: self.labelCallBack(1))
+        button2 = tk.Button(master=self.main, text = 'right\n(l)', command= lambda: self.labelCallBack(2))
+        button3 = tk.Button(master=self.main, text = 'back-right\n(o)', command= lambda: self.labelCallBack(3))
+        button4 = tk.Button(master=self.main, text = 'back\n(i)', command= lambda: self.labelCallBack(4))
+        button5 = tk.Button(master=self.main, text = 'back-left\n(u)', command= lambda: self.labelCallBack(5))
+        button6 = tk.Button(master=self.main, text = 'left\n(j)', command= lambda: self.labelCallBack(6))
+        button7 = tk.Button(master=self.main, text = 'front-left\n(m)', command= lambda: self.labelCallBack(7))
 
         button0.grid(row = 2, column = 1, sticky='NSEW', pady=2)
         button1.grid(row = 2, column = 2, sticky='NSEW', pady=2)
@@ -82,6 +82,7 @@ class LabelUI(tk.Frame):
         self.main.rowconfigure(1, weight=1)
         self.main.rowconfigure(2, weight=1)
     
+        # For hotkeys instead of mouse buttons.
         self.main.bind('<KeyPress>', lambda event: self.labelKeyPressCallBack(event))
 
 
@@ -89,19 +90,19 @@ class LabelUI(tk.Frame):
         if e.char == ',':
             self.labelCallBack(0)
         if e.char == '.':
-            self.labelCallBack(315)
+            self.labelCallBack(1)
         if e.char == 'l':
-            self.labelCallBack(270)
+            self.labelCallBack(2)
         if e.char == 'o':
-            self.labelCallBack(225)
+            self.labelCallBack(3)
         if e.char == 'i':
-            self.labelCallBack(180)
+            self.labelCallBack(4)
         if e.char == 'u':
-            self.labelCallBack(135)
+            self.labelCallBack(5)
         if e.char == 'j':
-            self.labelCallBack(90)
+            self.labelCallBack(6)
         if e.char == 'm':
-            self.labelCallBack(45)
+            self.labelCallBack(7)
 
 
     def labelCallBack(self, label):
@@ -166,7 +167,7 @@ class LabelUI(tk.Frame):
         self.load_image()
         self.curr_label = -1
 
-    
+
     def saveCallBack(self):
         self.save_label()
 
@@ -187,3 +188,4 @@ class LabelUI(tk.Frame):
         except IndexError:
             image_pane = tk.Label(master=self.main, text="No more images.")
             image_pane.grid(row=1, column=1, sticky='NSEW', pady=2)
+
