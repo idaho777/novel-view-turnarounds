@@ -3,6 +3,9 @@ import sys
 
 from tempfile import TemporaryFile
 
+np.set_printoptions(precision=3)
+np.set_printoptions(suppress=True)
+
 b = np.load(sys.argv[1])
 print(dir(b))
 print(b.files)
@@ -26,5 +29,8 @@ for i in range(len(orig_views)):
     save_dict[f'world_mat_{i}'] = wor_mat
     save_dict[f'camera_mat_inv_{i}'] = cam_mat_inv
     save_dict[f'world_mat_inv_{i}'] = wor_mat_inv
+
+    print(save_dict[f'world_mat_{i}'])
+
 
 np.savez_compressed('cameras.npz', **save_dict)
